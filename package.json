@@ -1,7 +1,15 @@
 {
-  "name": "tea-taster-react",
+  "name": "tea-taster",
+  "description": "Tea Tasting Notes",
   "version": "0.0.1",
-  "private": true,
+  "author": "Eric Horodyski",
+  "homepage": "https://ionicframework.com/",
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject"
+  },
   "dependencies": {
     "@capacitor/core": "2.4.2",
     "@ionic/react": "^5.0.7",
@@ -23,11 +31,12 @@
     "react-scripts": "3.4.0",
     "typescript": "3.8.3"
   },
-  "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject"
+  "devDependencies": {
+    "@capacitor/cli": "2.4.2",
+    "@ionic/prettier-config": "~1.0.1",
+    "husky": "~4.3.0",
+    "prettier": "~2.1.2",
+    "pretty-quick": "~3.0.2"
   },
   "eslintConfig": {
     "extends": "react-app"
@@ -44,8 +53,10 @@
       "last 1 safari version"
     ]
   },
-  "devDependencies": {
-    "@capacitor/cli": "2.4.2"
-  },
-  "description": "An Ionic project"
+  "prettier": "@ionic/prettier-config",
+  "husky": {
+    "hooks": {
+      "pre-commit": "pretty-quick --staged"
+    }
+  }
 }
