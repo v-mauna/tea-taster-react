@@ -52,6 +52,10 @@ const TeaPage: React.FC = () => {
     history.replace('/login');
   };
 
+  const showDetailsPage = (id: number) => {
+    history.push(`/tea/details/${id}`);
+  };
+
   useEffect(() => {
     const init = async () => {
       const teas = await getTeas();
@@ -86,7 +90,7 @@ const TeaPage: React.FC = () => {
             >
               {row.map(tea => (
                 <IonCol size="12" sizeMd="6" sizeXl="3" key={tea.id}>
-                  <IonCard>
+                  <IonCard button onClick={() => showDetailsPage(tea.id)}>
                     <IonImg src={tea.image} />
                     <IonCardHeader>
                       <IonCardTitle>{tea.name}</IonCardTitle>

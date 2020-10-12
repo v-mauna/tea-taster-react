@@ -6,6 +6,7 @@ import { IonReactRouter } from '@ionic/react-router';
 import { ProtectedRoute } from './core/auth';
 import TeaPage from './tea/TeaPage';
 import LoginPage from './login/LoginPage';
+import TeaDetailsPage from './tea/details/TeaDetailsPage';
 
 /* Core CSS required for Ionic components to work properly */
 import '@ionic/react/css/core.css';
@@ -39,6 +40,7 @@ const App: React.FC = () => {
         <IonRouterOutlet>
           <Route path="/login" component={LoginPage} exact={true} />
           <ProtectedRoute path="/tea" component={TeaPage} exact={true} />
+          <ProtectedRoute path="/tea/details/:id" component={TeaDetailsPage} />
           <Route exact path="/" render={() => <Redirect to="/tea" />} />
         </IonRouterOutlet>
       </IonReactRouter>
