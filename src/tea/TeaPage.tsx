@@ -1,7 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import {
-  IonButton,
-  IonButtons,
   IonCard,
   IonCardContent,
   IonCardHeader,
@@ -10,16 +8,13 @@ import {
   IonContent,
   IonGrid,
   IonHeader,
-  IonIcon,
   IonImg,
   IonPage,
   IonRow,
   IonTitle,
   IonToolbar,
 } from '@ionic/react';
-import { logOutOutline } from 'ionicons/icons';
 import { useHistory } from 'react-router';
-import { useAuthentication } from '../core/auth';
 import { useTea } from './useTea';
 import { Tea } from '../shared/models';
 import './TeaPage.css';
@@ -43,14 +38,8 @@ export const listToMatrix = (teaArray: Array<Tea>): Array<Array<Tea>> => {
 
 const TeaPage: React.FC = () => {
   const [teas, setTeas] = useState<Array<Tea>>([]);
-  const { logout } = useAuthentication();
   const history = useHistory();
   const { getTeas } = useTea();
-
-  const handleLogout = async () => {
-    await logout();
-    history.replace('/login');
-  };
 
   const showDetailsPage = (id: number) => {
     history.push(`/tabs/tea/details/${id}`);
@@ -69,11 +58,6 @@ const TeaPage: React.FC = () => {
       <IonHeader>
         <IonToolbar>
           <IonTitle>Tea</IonTitle>
-          <IonButtons slot="end">
-            <IonButton onClick={() => handleLogout()}>
-              <IonIcon slot="icon-only" icon={logOutOutline} />
-            </IonButton>
-          </IonButtons>
         </IonToolbar>
       </IonHeader>
       <IonContent fullscreen>
