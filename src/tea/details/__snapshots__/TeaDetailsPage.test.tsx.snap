@@ -47,6 +47,31 @@ exports[`<TeaDetailsPage /> renders consistently 1`] = `
         <p>
           Green teas have the oxidation process stopped very early on, leaving them with a very subtle flavor and complex undertones. These teas should be steeped at lower temperatures for shorter periods of time.
         </p>
+        <div
+          class="rating"
+          style="opacity: 1;"
+        >
+          <ion-icon
+            aria-label="Rate 1 stars"
+            icon="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' class='ionicon' viewBox='0 0 512 512'><title>Star</title><path d='M480 208H308L256 48l-52 160H32l140 96-54 160 138-100 138 100-54-160z' stroke-linejoin='round' class='ionicon-fill-none ionicon-stroke-width'/></svg>"
+          />
+          <ion-icon
+            aria-label="Rate 2 stars"
+            icon="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' class='ionicon' viewBox='0 0 512 512'><title>Star</title><path d='M480 208H308L256 48l-52 160H32l140 96-54 160 138-100 138 100-54-160z' stroke-linejoin='round' class='ionicon-fill-none ionicon-stroke-width'/></svg>"
+          />
+          <ion-icon
+            aria-label="Rate 3 stars"
+            icon="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' class='ionicon' viewBox='0 0 512 512'><title>Star</title><path d='M480 208H308L256 48l-52 160H32l140 96-54 160 138-100 138 100-54-160z' stroke-linejoin='round' class='ionicon-fill-none ionicon-stroke-width'/></svg>"
+          />
+          <ion-icon
+            aria-label="Rate 4 stars"
+            icon="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' class='ionicon' viewBox='0 0 512 512'><title>Star</title><path d='M480 208H308L256 48l-52 160H32l140 96-54 160 138-100 138 100-54-160z' stroke-linejoin='round' class='ionicon-fill-none ionicon-stroke-width'/></svg>"
+          />
+          <ion-icon
+            aria-label="Rate 5 stars"
+            icon="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' class='ionicon' viewBox='0 0 512 512'><title>Star</title><path d='M480 208H308L256 48l-52 160H32l140 96-54 160 138-100 138 100-54-160z' stroke-linejoin='round' class='ionicon-fill-none ionicon-stroke-width'/></svg>"
+          />
+        </div>
       </div>
     </ion-content>
   </div>

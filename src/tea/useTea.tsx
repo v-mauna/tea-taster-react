@@ -1,3 +1,4 @@
+import { Plugins } from '@capacitor/core';
 import { useCallback } from 'react';
 import apiInstance from '../core/apiInstance';
 import { Tea } from '../shared/models';
@@ -17,23 +18,34 @@ export const useTea = () => {
   const getTeas = useCallback(async (): Promise<Tea[]> => {
     const url = `/tea-categories`;
     const { data } = await apiInstance.get(url);
-    return data.map((item: any) => fromJsonToTea(item));
+    return await Promise.all(
+      data.map(async (item: any) => await fromJsonToTea(item)),
+    );
   }, []);
 
-  const getTeaById = useCallback(async (id: number): Promise<
-    Tea | undefined
-  > => {
+  const getTeaById = useCallback(async (id: number): Promise<Tea> => {
     const url = `/tea-categories/${id}`;
     const { data } = await apiInstance.get(url);
-    return fromJsonToTea(data);
+    return await fromJsonToTea(data);
   }, []);
 
-  const fromJsonToTea = (obj: any): Tea => {
+  const saveTea = async (tea: Tea): Promise<void> => {
+    const { Storage } = Plugins;
+    return Storage.set({
+      key: `rating${tea.id}`,
+      value: tea.rating?.toString() || '0',
+    });
+  };
+
+  const fromJsonToTea = async (obj: any): Promise<Tea> => {
+    const { Storage } = Plugins;
+    const rating = await Storage.get({ key: `rating${obj.id}` });
     return {
       ...obj,
       image: require(`../assets/images/${images[obj.id - 1]}.jpg`),
+      rating: parseInt(rating?.value || '0', 10),
     };
   };
 
-  return { getTeas, getTeaById };
+  return { getTeas, getTeaById, saveTea };
 };
