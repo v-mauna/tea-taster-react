@@ -4,9 +4,8 @@ import { Plugins } from '@capacitor/core';
 import { IonApp, IonRouterOutlet, isPlatform } from '@ionic/react';
 import { IonReactRouter } from '@ionic/react-router';
 import { ProtectedRoute } from './core/auth';
-import TeaPage from './tea/TeaPage';
 import LoginPage from './login/LoginPage';
-import TeaDetailsPage from './tea/details/TeaDetailsPage';
+import Tabs from './Tabs';
 
 /* Core CSS required for Ionic components to work properly */
 import '@ionic/react/css/core.css';
@@ -38,10 +37,9 @@ const App: React.FC = () => {
     <IonApp>
       <IonReactRouter>
         <IonRouterOutlet>
-          <Route path="/login" component={LoginPage} exact={true} />
-          <ProtectedRoute path="/tea" component={TeaPage} exact={true} />
-          <ProtectedRoute path="/tea/details/:id" component={TeaDetailsPage} />
-          <Route exact path="/" render={() => <Redirect to="/tea" />} />
+          <Route exact path="/login" component={LoginPage} />
+          <ProtectedRoute path="/tabs" component={Tabs} />
+          <Route exact path="/" render={() => <Redirect to="/login" />} />
         </IonRouterOutlet>
       </IonReactRouter>
     </IonApp>
