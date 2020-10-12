@@ -22,6 +22,7 @@
     "@ionic/react-test-utils": "0.0.3",
     "@testing-library/jest-dom": "^4.2.4",
     "@testing-library/react": "^9.4.0",
+    "@testing-library/react-hooks": "~3.4.2",
     "@testing-library/user-event": "^8.0.3",
     "@types/jest": "^24.0.25",
     "@types/node": "^12.12.24",
@@ -45,7 +46,8 @@
     "@ionic/prettier-config": "~1.0.1",
     "husky": "~4.3.0",
     "prettier": "~2.1.2",
-    "pretty-quick": "~3.0.2"
+    "pretty-quick": "~3.0.2",
+    "react-test-renderer": "~16.13.1"
   },
   "eslintConfig": {
     "extends": "react-app"
