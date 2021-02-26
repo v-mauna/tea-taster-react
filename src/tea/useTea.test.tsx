@@ -1,9 +1,18 @@
 import React from 'react';
 import { renderHook, act, cleanup } from '@testing-library/react-hooks';
-import apiInstance from '../core/apiInstance';
 import { Tea } from '../shared/models';
 import { useTea } from './useTea';
 import { Plugins } from '@capacitor/core';
+
+jest.mock('../core/auth/useAuthInterceptor', () => ({
+  useAuthInterceptor: () => ({
+    instance: {
+      get: mockInstanceVerb,
+    },
+  }),
+}));
+
+let mockInstanceVerb = jest.fn();
 
 const expectedTeas = [
   {
@@ -101,9 +110,7 @@ describe('useTea', () => {
 
   describe('get all teas', () => {
     beforeEach(() => {
-      (apiInstance.get as any) = jest.fn(() =>
-        Promise.resolve({ data: resultTeas() }),
-      );
+      mockInstanceVerb = jest.fn(async () => ({ data: resultTeas() }));
     });
 
     it('gets the teas', async () => {
@@ -111,7 +118,7 @@ describe('useTea', () => {
       await act(async () => {
         await result.current.getTeas();
       });
-      expect(apiInstance.get).toHaveBeenCalledTimes(1);
+      expect(mockInstanceVerb).toHaveBeenCalledTimes(1);
     });
 
     it('adds an image to each tea item', async () => {
@@ -126,9 +133,7 @@ describe('useTea', () => {
 
   describe('get a specific tea', () => {
     beforeEach(() => {
-      (apiInstance.get as any) = jest.fn(() =>
-        Promise.resolve({ data: resultTeas()[0] }),
-      );
+      mockInstanceVerb = jest.fn(async () => ({ data: resultTeas()[0] }));
     });
 
     it('gets the specific tea', async () => {
@@ -136,7 +141,7 @@ describe('useTea', () => {
       await act(async () => {
         await result.current.getTeaById(4);
       });
-      expect(apiInstance.get).toHaveBeenCalledTimes(1);
+      expect(mockInstanceVerb).toHaveBeenCalledTimes(1);
     });
 
     it('adds an image to the Tea object', async () => {
