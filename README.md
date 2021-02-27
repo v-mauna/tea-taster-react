@@ -21,6 +21,7 @@ Each step of the training has its own commit within the `main` branch. You shoul
 ## Branches
 
 - `main` - shows the completed `@ionic/react` three-day Enterprise training project. This project is used as the basis for other trainings.
+- `feature/identity-vault` - shows the completed Identity Vault training for `@ionic/react` applications.
 
 Each of the branches has a similar structure to `main` whereby each step is signified by its own commit in the branch.
 
