@@ -1,5 +1,6 @@
 import Axios from 'axios';
 import { useContext } from 'react';
+import { AuthMode } from '@ionic-enterprise/identity-vault';
 import { AuthContext } from './AuthContext';
 
 export const useAuthentication = () => {
@@ -16,8 +17,13 @@ export const useAuthentication = () => {
       const { data } = await Axios.post(url, { username, password });
 
       if (!data.success) throw new Error('Failed to log in.');
+
       const session = { token: data.token, user: data.user };
-      await vault.login(session);
+      const mode = (await vault.isBiometricsAvailable())
+        ? AuthMode.BiometricOnly
+        : AuthMode.PasscodeOnly;
+
+      await vault.login(session, mode);
       dispatch({ type: 'LOGIN_SUCCESS', session });
     } catch (error) {
       dispatch({ type: 'LOGIN_FAILURE', error: error.message });
@@ -38,11 +44,30 @@ export const useAuthentication = () => {
     }
   };
 
+  const restoreSession = async (): Promise<void> => {
+    const session = await vault.restoreSession();
+    if (session) dispatch({ type: 'RESTORE_SESSION', session });
+  };
+
+  const canUnlockVault = async (): Promise<boolean> => {
+    if (!(await vault.hasStoredSession())) return false;
+    if (!(await (await vault.getVault()).isLocked())) return false;
+
+    const mode = await vault.getAuthMode();
+    return (
+      mode === AuthMode.PasscodeOnly ||
+      mode === AuthMode.BiometricAndPasscode ||
+      (mode === AuthMode.BiometricOnly && (await vault.isBiometricsAvailable()))
+    );
+  };
+
   return {
     session: state.session,
     loading: state.loading,
     error: state.error,
     login,
     logout,
+    restoreSession,
+    canUnlockVault,
   };
 };

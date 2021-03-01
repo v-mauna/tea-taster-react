@@ -1,8 +1,8 @@
 import { isPlatform } from '@ionic/react';
 import {
   IonicIdentityVaultUser,
-  AuthMode,
   IonicNativeAuthPlugin,
+  VaultErrorCodes,
 } from '@ionic-enterprise/identity-vault';
 import { BrowserVaultPlugin } from './BrowserVaultPlugin';
 import { Session } from '../models';
@@ -13,7 +13,11 @@ export class SessionVault extends IonicIdentityVaultUser<Session> {
   private constructor() {
     super(
       { ready: () => Promise.resolve(true) },
-      { authMode: AuthMode.SecureStorage },
+      {
+        unlockOnAccess: true,
+        hideScreenOnBackground: true,
+        lockAfter: 5000,
+      },
     );
   }
 
@@ -22,6 +26,19 @@ export class SessionVault extends IonicIdentityVaultUser<Session> {
       SessionVault.instance = new SessionVault();
     }
     return SessionVault.instance;
+  }
+
+  async restoreSession(): Promise<Session | undefined> {
+    try {
+      return await super.restoreSession();
+    } catch (error) {
+      if (error.code === VaultErrorCodes.VaultLocked) {
+        const vault = await this.getVault();
+        await vault.clear();
+      } else {
+        throw error;
+      }
+    }
   }
 
   getPlugin(): IonicNativeAuthPlugin {

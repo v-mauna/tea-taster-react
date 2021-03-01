@@ -1,4 +1,4 @@
-import React, { createContext, useEffect, useReducer, useState } from 'react';
+import React, { createContext, useEffect, useReducer } from 'react';
 import { Session } from '../models';
 import { SessionVault } from '../vault/SessionVault';
 
@@ -62,21 +62,23 @@ export const AuthContext = createContext<{
 
 export const AuthProvider: React.FC = ({ children }) => {
   const vault = SessionVault.getInstance();
-  const [initializing, setInitializing] = useState<boolean>(true);
   const [state, dispatch] = useReducer(reducer, initialState);
 
   useEffect(() => {
     (async () => {
       const session = await vault.restoreSession();
-      if (!session) return setInitializing(false);
-      dispatch({ type: 'RESTORE_SESSION', session });
-      return setInitializing(false);
+      if (!session) return;
+      return dispatch({ type: 'RESTORE_SESSION', session });
     })();
   }, [vault]);
 
+  vault.onVaultLocked = (): void => {
+    dispatch({ type: 'CLEAR_SESSION' });
+  };
+
   return (
     <AuthContext.Provider value={{ state, dispatch, vault }}>
-      {initializing ? <div>Loading...</div> : children}
+      {children}
     </AuthContext.Provider>
   );
 };
