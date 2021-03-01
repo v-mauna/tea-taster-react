@@ -1,7 +1,6 @@
-import { Plugins } from '@capacitor/core';
-import Axios from 'axios';
 import React, { createContext, useEffect, useReducer, useState } from 'react';
 import { Session } from '../models';
+import { SessionVault } from '../vault/SessionVault';
 
 interface AuthState {
   session?: Session;
@@ -54,33 +53,29 @@ const reducer = (
 export const AuthContext = createContext<{
   state: typeof initialState;
   dispatch: (action: AuthAction) => void;
+  vault: SessionVault;
 }>({
   state: initialState,
   dispatch: () => {},
+  vault: SessionVault.getInstance(),
 });
 
 export const AuthProvider: React.FC = ({ children }) => {
+  const vault = SessionVault.getInstance();
   const [initializing, setInitializing] = useState<boolean>(true);
   const [state, dispatch] = useReducer(reducer, initialState);
 
   useEffect(() => {
-    const { Storage } = Plugins;
     (async () => {
-      const { value: token } = await Storage.get({ key: 'auth-token' });
-      if (!token) return setInitializing(false);
-
-      const headers = { Authorization: 'Bearer ' + token };
-      const url = `${process.env.REACT_APP_DATA_SERVICE}/users/current`;
-      const { data: user } = await Axios.get(url, { headers });
-
-      dispatch({ type: 'RESTORE_SESSION', session: { token, user } });
-
+      const session = await vault.restoreSession();
+      if (!session) return setInitializing(false);
+      dispatch({ type: 'RESTORE_SESSION', session });
       return setInitializing(false);
     })();
-  }, []);
+  }, [vault]);
 
   return (
-    <AuthContext.Provider value={{ state, dispatch }}>
+    <AuthContext.Provider value={{ state, dispatch, vault }}>
       {initializing ? <div>Loading...</div> : children}
     </AuthContext.Provider>
   );
