@@ -1,4 +1,5 @@
-import React, { createContext, useEffect, useReducer } from 'react';
+import React, { createContext, useEffect, useReducer, useState } from 'react';
+import PinDialog from '../../pin-dialog/PinDialog';
 import { Session } from '../models';
 import { SessionVault } from '../vault/SessionVault';
 
@@ -60,9 +61,14 @@ export const AuthContext = createContext<{
   vault: SessionVault.getInstance(),
 });
 
+type PasscodeCallback = (value: string) => void;
+let passcodeRequestCallback: undefined | PasscodeCallback;
+
 export const AuthProvider: React.FC = ({ children }) => {
   const vault = SessionVault.getInstance();
   const [state, dispatch] = useReducer(reducer, initialState);
+  const [showPasscodeModal, setShowPasscodeModal] = useState<boolean>(false);
+  const [setPasscodeMode, setSetPasscodeMode] = useState<boolean>(false);
 
   useEffect(() => {
     (async () => {
@@ -76,8 +82,32 @@ export const AuthProvider: React.FC = ({ children }) => {
     dispatch({ type: 'CLEAR_SESSION' });
   };
 
+  vault.onPasscodeRequest = async (
+    _isPasscodeSetRequest: boolean,
+  ): Promise<string | undefined> => {
+    return new Promise(resolve => {
+      passcodeRequestCallback = (value: string) => {
+        resolve(value || '');
+        setShowPasscodeModal(false);
+        setSetPasscodeMode(false);
+      };
+      setSetPasscodeMode(_isPasscodeSetRequest);
+      setShowPasscodeModal(true);
+    });
+  };
+
+  const handlePasscodeRequest = (callback: PasscodeCallback) => (
+    <PinDialog
+      onDismiss={({ data }) => callback(data)}
+      setPasscodeMode={setPasscodeMode}
+    />
+  );
+
   return (
     <AuthContext.Provider value={{ state, dispatch, vault }}>
+      {showPasscodeModal &&
+        passcodeRequestCallback &&
+        handlePasscodeRequest(passcodeRequestCallback)}
       {children}
     </AuthContext.Provider>
   );
