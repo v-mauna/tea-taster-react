@@ -1,13 +1,17 @@
 import { Plugins } from '@capacitor/core';
 import Axios from 'axios';
 import React, { createContext, useEffect, useReducer, useState } from 'react';
+import PinDialog from '../../pinDialog/PinDialog';
 import { Session } from '../models';
+import { SessionVault } from '../vault/SessionVault';
 
 interface AuthState {
   session?: Session;
   loading: boolean;
   error: string;
 }
+type PasscodeCallback = (value: string) => void;
+let passcodeRequestCallback: undefined | PasscodeCallback;
 
 const initialState: AuthState = {
   session: undefined,
@@ -54,34 +58,58 @@ const reducer = (
 export const AuthContext = createContext<{
   state: typeof initialState;
   dispatch: (action: AuthAction) => void;
+  vault: SessionVault;
 }>({
   state: initialState,
   dispatch: () => {},
+  vault: SessionVault.getInstance(),
 });
 
 export const AuthProvider: React.FC = ({ children }) => {
-  const [initializing, setInitializing] = useState<boolean>(true);
+  const vault = SessionVault.getInstance();
   const [state, dispatch] = useReducer(reducer, initialState);
+  const [showPasscodeModal, setShowPasscodeModal] = useState<boolean>(false);
+  const [setPasscodeMode, setSetPasscodeMode] = useState<boolean>(false);
 
   useEffect(() => {
-    const { Storage } = Plugins;
     (async () => {
-      const { value: token } = await Storage.get({ key: 'auth-token' });
-      if (!token) return setInitializing(false);
-
-      const headers = { Authorization: 'Bearer ' + token };
-      const url = `${process.env.REACT_APP_DATA_SERVICE}/users/current`;
-      const { data: user } = await Axios.get(url, { headers });
-
-      dispatch({ type: 'RESTORE_SESSION', session: { token, user } });
-
-      return setInitializing(false);
+      const session = await vault.restoreSession();
+      if (!session) return;
+      return dispatch({ type: 'RESTORE_SESSION', session });
     })();
-  }, []);
+  }, [vault]);
+
+  vault.onVaultLocked = (): void => {
+    dispatch({ type: 'CLEAR_SESSION' });
+  };
+
+  vault.onPasscodeRequest = async (
+    _isPasscodeSetRequest: boolean,
+  ): Promise<string | undefined> => {
+    return new Promise(resolve => {
+      passcodeRequestCallback = (value: string) => {
+        resolve(value || '');
+        setShowPasscodeModal(false);
+        setSetPasscodeMode(false);
+      };
+      setSetPasscodeMode(_isPasscodeSetRequest);
+      setShowPasscodeModal(true);
+    });
+  };
+
+  const handlePasscodeRequest = (callback: PasscodeCallback) => (
+    <PinDialog
+      onDismiss={({ data }) => callback(data)}
+      setPasscodeMode={setPasscodeMode}
+    />
+  );
 
   return (
-    <AuthContext.Provider value={{ state, dispatch }}>
-      {initializing ? <div>Loading...</div> : children}
+    <AuthContext.Provider value={{ state, dispatch, vault }}>
+      {showPasscodeModal &&
+        passcodeRequestCallback &&
+        handlePasscodeRequest(passcodeRequestCallback)}
+      {children}
     </AuthContext.Provider>
   );
 };

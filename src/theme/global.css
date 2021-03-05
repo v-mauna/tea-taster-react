@@ -46,3 +46,8 @@ ion-select::part(icon) {
 ion-select::part(text) {
   margin-right: 1em;
 }
+
+.unlock-app {
+  margin-top: 3em;
+  font-size: xx-large;
+}

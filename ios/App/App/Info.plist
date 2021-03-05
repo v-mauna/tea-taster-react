@@ -73,5 +73,11 @@
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<true/>
+	<key>NSFaceIDUsageDescription</key>
+	<string>Use Face ID to unlock the application
+Use Face ID to unlock the application
+Use Face ID to unlock the application
+Use Face ID to unlock the application
+Use FaceID to unlock the application</string>
 </dict>
 </plist>

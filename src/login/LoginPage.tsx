@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   IonButton,
   IonContent,
@@ -15,11 +15,17 @@ import {
 } from '@ionic/react';
 import { useForm, Controller } from 'react-hook-form';
 import { useHistory } from 'react-router';
-import { logInOutline } from 'ionicons/icons';
+import { lockOpenOutline, logInOutline } from 'ionicons/icons';
 import { useAuthentication } from '../core/auth';
 
 const LoginPage: React.FC = () => {
-  const { login, session, error } = useAuthentication();
+  const {
+    login,
+    session,
+    error,
+    canUnlockVault,
+    restoreSession,
+  } = useAuthentication();
   const history = useHistory();
   const { handleSubmit, control, formState, errors } = useForm<{
     email: string;
@@ -27,10 +33,18 @@ const LoginPage: React.FC = () => {
   }>({
     mode: 'onChange',
   });
+  const [showUnlock, setShowUnlock] = useState<boolean>(false);
 
   useEffect(() => {
     session && history.replace('/tabs');
   }, [session, history]);
+
+  useEffect(() => {
+    (async () => {
+      setShowUnlock(await canUnlockVault());
+    })();
+    // eslint-disable-next-line
+  }, [session]);
 
   const handleLogin = async (data: { email: string; password: string }) => {
     await login(data.email, data.password);
@@ -49,6 +63,15 @@ const LoginPage: React.FC = () => {
             <IonTitle size="large">Login</IonTitle>
           </IonToolbar>
         </IonHeader>
+        {showUnlock && (
+          <div
+            className="unlock-app ion-text-center"
+            onClick={() => restoreSession()}
+          >
+            <IonIcon icon={lockOpenOutline} />
+            <div>Unlock</div>
+          </div>
+        )}
         <form>
           <IonList>
             <IonItem>
