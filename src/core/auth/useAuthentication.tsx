@@ -30,15 +30,14 @@ export const useAuthentication = () => {
       dispatch({ type: 'LOGIN_FAILURE', error: error.message });
     }
   };
+
   const logout = async (): Promise<void> => {
     dispatch({ type: 'LOGOUT' });
     try {
-      const { Storage } = Plugins;
       const url = `${process.env.REACT_APP_DATA_SERVICE}/logout`;
       const headers = { Authorization: 'Bearer ' + state.session!.token };
 
       await Axios.post(url, null, { headers });
-      await Storage.remove({ key: 'auth-token' });
       await vault.logout();
       dispatch({ type: 'LOGOUT_SUCCESS' });
     } catch (error) {
